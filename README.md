@@ -128,9 +128,26 @@ set :whenever_environment, defer { stage }
 require "whenever/capistrano"
 ```
 
-The capistrano variable `:stage` should be the one holding your environment name. This will make the correct `:environment` available in your `schedule.rb`.
+The capistrano variable `:stage` should be the one holding your environment name. This will make the correct `:environment` available in your `schedule.rb`,
+so you can do things like
 
-If both your environments are on the same server you'll want to namespace them or they'll overwrite each other when you deploy:
+```ruby
+
+case @environment
+
+when 'production'
+  every :day, :at => '12:20am' do
+    rake "some:task_production_task"
+  end 
+  
+when 'staging'
+  every :day, :at => '12:20am' do
+    rake "some:staging_task"
+  end 
+end
+```
+
+If several environments are on the same server, you'll want to namespace the different sets of tasks, otherwise tasks will overwrite each other when you deploy:
 
 ```ruby
 set :whenever_environment, defer { stage }
